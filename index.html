@@ -420,6 +420,14 @@
             margin: 10px auto 0 auto; 
             text-align: center;
         }
+        @media (hover: hover) and (pointer: fine) {
+            .cool-btn:hover {
+                background-position: 100% 0;
+                transform: translateY(-8px) scale(1.1) rotate(-1deg);
+                background: linear-gradient(135deg, #5d6171, #30384a, #1b1d21);
+                box-shadow: 0 10px 25px rgba(0,0,0,0.5);
+            }
+        }
 
         @media (max-width: 768px) {
             .logo {
