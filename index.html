@@ -420,14 +420,11 @@
             margin: 10px auto 0 auto; 
             text-align: center;
         }
-       @media (hover: hover) and (pointer: fine) {
-            .project-item:hover {
-                transform: translateY(-5px);
-                background: rgba(255,255,255,0.18);
-            }
-        }
 
         @media (max-width: 768px) {
+            .logo {
+                display: none;
+            }
             #home h1 {
                 font-size: 2rem;
             }
@@ -691,42 +688,41 @@
     </script>
 
     <script>
-    const carousel = document.querySelector('.project-carousel');
+        const carousel = document.querySelector('.project-carousel');
 
-    let autoScrollActive = true;
-    let direction = 1;
-    let speed = 1;   
+        let autoScrollActive = true;
+        let direction = 1;
+        let speed = 1;
 
-    function autoScroll() {
-        if (!autoScrollActive) return;
+        function autoScroll() {
+            if (!autoScrollActive) return;
 
-        carousel.scrollLeft += direction * speed;
+            carousel.scrollLeft += direction * speed;
 
+            if (carousel.scrollLeft + carousel.clientWidth >= carousel.scrollWidth - 2) {
+                direction = -1;
+            }
 
-        if (carousel.scrollLeft + carousel.clientWidth >= carousel.scrollWidth - 2) {
-            direction = -1;
+            if (carousel.scrollLeft <= 0) {
+                direction = 1;
+            }
+
+            requestAnimationFrame(autoScroll);
         }
 
-
-        if (carousel.scrollLeft <= 0) {
-            direction = 1;
-        }
-
-        requestAnimationFrame(autoScroll);
-    }
-
-    autoScroll();
-
-
-    carousel.addEventListener("mouseenter", () => {
-        autoScrollActive = false;
-    });
-
-
-    carousel.addEventListener("mouseleave", () => {
-        autoScrollActive = true;
         autoScroll();
-    });
+
+
+        carousel.addEventListener('mousedown', () => autoScrollActive = false);
+        carousel.addEventListener('touchstart', () => autoScrollActive = false);
+
+        carousel.addEventListener('mouseup', () => { autoScrollActive = true; autoScroll(); });
+        carousel.addEventListener('touchend', () => { autoScrollActive = true; autoScroll(); });
+
+
+        carousel.addEventListener("mouseenter", () => autoScrollActive = false);
+        carousel.addEventListener("mouseleave", () => { autoScrollActive = true; autoScroll(); });
+
     </script>
     <script>
 
