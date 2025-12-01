@@ -420,7 +420,13 @@
             margin: 10px auto 0 auto; 
             text-align: center;
         }
-       
+       @media (hover: hover) and (pointer: fine) {
+            .project-item:hover {
+                transform: translateY(-5px);
+                background: rgba(255,255,255,0.18);
+            }
+        }
+
         @media (max-width: 768px) {
             #home h1 {
                 font-size: 2rem;
