@@ -7,7 +7,8 @@
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;600;800&display=swap" rel="stylesheet">
     
     <style>
-
+        .project-card:hover .platform-icon.roblox { fill: #0280f6; } 
+        
         :root {
             --primary: #7b9dff;
             --primary-dark: #3271f9;
@@ -75,13 +76,69 @@
         .profile-img { width: 100%; border-radius: 20px; cursor: pointer; transition: transform 0.1s ease-out, box-shadow 0.2s ease-out; transform-style: preserve-3d; will-change: transform; box-shadow: 0 10px 30px -10px rgba(0,0,0,0.5); }
 
         /* Projects Grid */
-        .project-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 25px; }
+        .project-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 25px; transition: all 0.4s ease; }
         .project-card { background: var(--glass); border: 1px solid var(--glass-border); border-radius: 20px; overflow: hidden; transition: 0.4s; }
         .project-card:hover { transform: translateY(-10px); border-color: var(--primary); background: rgba(255,255,255,0.08); }
         .project-img { width: 100%; height: 200px; object-fit: cover; }
         .project-info { padding: 25px; }
         .project-info h3 { margin-bottom: 10px; color: var(--primary); }
         .project-info p { font-size: 0.9rem; color: #9aa0c8; margin-bottom: 15px; }
+
+        /* --- FITUR COLLAPSIBLE CATEGORY --- */
+        .category-header {
+            display: inline-flex;
+            align-items: center;
+            cursor: pointer;
+            margin-bottom: 20px;
+            user-select: none;
+            gap: 15px;
+            transition: opacity 0.3s;
+            padding: 5px 0;
+        }
+        .category-header:hover {
+            opacity: 0.8;
+        }
+        .category-title {
+            color: var(--primary);
+            font-size: 1.5rem;
+            margin: 0;
+            padding-left: 15px;
+        }
+        .category-title.roblox { border-left: 4px solid var(--accent); }
+        .category-title.indie { border-left: 4px solid var(--primary); }
+        
+        .toggle-arrow {
+            width: 18px;
+            height: 18px;
+            fill: var(--primary);
+            transition: transform 0.4s ease;
+        }
+        
+        /* State Tertutup (Collapsed) untuk Panah */
+        .category-header.collapsed .toggle-arrow {
+            transform: rotate(-90deg); 
+        }
+
+        /* Container Pembungkus Grid untuk Animasi Mulus */
+        .grid-wrapper {
+            overflow: hidden;
+            transition: max-height 0.6s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.5s ease;
+            max-height: 3000px; /* Angka besar asal bisa menampung isi grid */
+            opacity: 1;
+            margin-bottom: 40px; /* Jarak antar kategori */
+        }
+        
+        .grid-wrapper.hidden {
+            max-height: 0;
+            opacity: 0;
+            margin-bottom: 0; /* Menghilangkan jarak saat ditutup */
+        }
+
+        /* --- TAMBAHAN: Platform Icons --- */
+        .platform-tags { display: flex; gap: 10px; margin-bottom: 10px; }
+        .platform-icon { width: 20px; height: 20px; fill: #9aa0c8; transition: 0.3s; }
+        .project-card:hover .platform-icon.windows { fill: #00a4ef; }
+        .project-card:hover .platform-icon.android { fill: #3ddc84; }
 
         /* Skills */
         .skills-container { display: grid; grid-template-columns: 1fr 1fr; gap: 40px; }
@@ -100,7 +157,6 @@
 
         /* --- MOBILE RESPONSIVE CSS --- */
         @media (max-width: 768px) {
-            /* Header & Nav Mobile */
             header { padding: 1rem 5%; }
             .menu-toggle { display: flex; z-index: 1001; }
             
@@ -114,47 +170,24 @@
             nav.active { right: 0; }
             nav a { font-size: 1.2rem; }
 
-            /* Hamburger Animation */
             .menu-toggle.active span:nth-child(1) { transform: rotate(45deg) translate(5px, 6px); }
             .menu-toggle.active span:nth-child(2) { opacity: 0; }
             .menu-toggle.active span:nth-child(3) { transform: rotate(-45deg) translate(5px, -6px); }
 
-            /* Hero Mobile */
             #home h1 { font-size: 2.8rem; line-height: 1.2; }
             #home p { font-size: 1rem; padding: 0 10px; }
             .btn-group { flex-direction: column; width: 100%; gap: 15px; }
             .cool-btn { width: 100%; text-align: center; }
 
-            /* About Mobile */
             .about-card { grid-template-columns: 1fr; padding: 25px; text-align: center; gap: 25px; }
             .profile-img { width: 70%; margin: 0 auto; display: block; }
 
-            /* Projects & Skills Mobile */
             .project-grid { grid-template-columns: 1fr; }
             .skills-container { grid-template-columns: 1fr; gap: 20px; }
             
-            /* Section Spacing */
             .section { padding: 60px 5%; }
             .section-title { font-size: 2rem; margin-bottom: 2rem; }
         }
-
-        /* --- TAMBAHAN: Platform Icons --- */
-        .platform-tags {
-            display: flex;
-            gap: 10px; /* Jarak antar ikon */
-            margin-bottom: 10px; /* Jarak ke Judul Game */
-        }
-        
-        .platform-icon {
-            width: 20px;
-            height: 20px;
-            fill: #9aa0c8; /* Warna abu-abu default */
-            transition: 0.3s;
-        }
-
-        /* Efek hover (opsional, biar keren dikit) */
-        .project-card:hover .platform-icon.windows { fill: #00a4ef; } /* Biru Windows */
-        .project-card:hover .platform-icon.android { fill: #3ddc84; } /* Hijau Android */
     </style>
 </head>
 
@@ -205,95 +238,123 @@
 
     <section class="section" id="projects">
         <h2 class="section-title">Proyek Pilihan</h2>
-        <div class="project-grid">
-            <div class="project-card">
-                <img src="https://ggjv4.s3.us-west-1.amazonaws.com/files/styles/flexslider_full/s3/games/2026/864713/screenshot/Screenshot%202026-02-01%20163255.png?VersionId=3coHu.chQwYHxFf4EM_DLSQ1sb8Enz81&itok=yqQhdfLI" class="project-img" alt="UNMASKED">
-                <div class="project-info">
-                    <div class="platform-tags">
-                        <svg class="platform-icon windows" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><path d="M0 93.7l183.6-25.3v177.4H0V93.7zm0 324.6l183.6 25.3V268.4H0v149.9zm203.8 28L448 480V268.4H203.8v177.9zm0-380.6v180.1H448V32L203.8 65.7z"/></svg>
-                        
-                        <svg class="platform-icon android" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 576 512"><path d="M420.55,301.93a24,24,0,1,1,24-24,24,24,0,0,1-24,24m-265.1,0a24,24,0,1,1,24-24,24,24,0,0,1-24,24m273.7-144.48,47.94-83a10,10,0,1,0-17.27-10l-48.54,84.07a301.25,301.25,0,0,0-246.56,0L116.18,64.45a10,10,0,1,0-17.27,10l47.94,83C64.53,202.22,8.24,285.55,0,384H576c-8.24-98.45-64.54-181.78-146.85-226.55"/></svg>
+
+        <div class="category-header" onclick="toggleCategory('wrapper-roblox', this)">
+            <h3 class="category-title roblox">Roblox Experiences</h3>
+            <svg class="toggle-arrow" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><path d="M224 416c-8.188 0-16.38-3.125-22.62-9.375l-192-192c-12.5-12.5-12.5-32.75 0-45.25s32.75-12.5 45.25 0L224 338.8l169.4-169.4c12.5-12.5 32.75-12.5 45.25 0s12.5 32.75 0 45.25l-192 192C240.4 412.9 232.2 416 224 416z"/></svg>
+        </div>
+
+        <div class="grid-wrapper" id="wrapper-roblox">
+            <div class="project-grid">
+                <div class="project-card" style="max-width: 400px;">
+                    <img src="https://tr.rbxcdn.com/180DAY-b0771dae50869e67fdc4547af2d719cb/768/432/Image/Webp/noFilter" class="project-img" alt="Memory Platformer Roblox">
+                    <div class="project-info">
+                        <div class="platform-tags">
+                            <svg class="platform-icon roblox" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><path d="M98.8 0L0 413.2 413.2 512 512 98.8 98.8 0zM318.1 313.8l-123.4-29.5 29.5-123.4 123.4 29.5-29.5 123.4z"/></svg>
+                        </div>
+                        <h3>Roblox Memory Path</h3>
+                        <p>Platformer unik dengan mekanik <b>Monitoring Mode</b> (menghafal jalan) dan <b>Walking Mode</b> (melewati jalan yang tidak terlihat).</p>
+                        <a href="https://www.roblox.com/share?code=7cc3334cc0ce164598829aab4df988f2&type=ExperienceDetails&stamp=1773397374836" class="cool-btn secondary" target="_blank" rel="noopener noreferrer" style="padding: 8px 20px; font-size: 0.8rem; display:inline-block; margin-top:10px;">Buka Roblox</a>
                     </div>
-                    <h3>UNMASKED</h3>
-                    <p>game platformer 3D minimalis tentang persepsi dan memori.</p>
-                    <a href="https://hita-studio.itch.io/unmasked" class="cool-btn secondary" target="_blank" rel="noopener noreferrer" style="padding: 8px 20px; font-size: 0.8rem; display:inline-block; margin-top:10px;">Lihat</a>
                 </div>
             </div>
+        </div>
 
-            <div class="project-card">
-                <img src="think and code 3d.png" class="project-img" alt="Think & Code 3D">
-                <div class="project-info">
-                    <div class="platform-tags">
-                        <svg class="platform-icon windows" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><path d="M0 93.7l183.6-25.3v177.4H0V93.7zm0 324.6l183.6 25.3V268.4H0v149.9zm203.8 28L448 480V268.4H203.8v177.9zm0-380.6v180.1H448V32L203.8 65.7z"/></svg>
-                        
-                        <svg class="platform-icon android" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 576 512"><path d="M420.55,301.93a24,24,0,1,1,24-24,24,24,0,0,1-24,24m-265.1,0a24,24,0,1,1,24-24,24,24,0,0,1-24,24m273.7-144.48,47.94-83a10,10,0,1,0-17.27-10l-48.54,84.07a301.25,301.25,0,0,0-246.56,0L116.18,64.45a10,10,0,1,0-17.27,10l47.94,83C64.53,202.22,8.24,285.55,0,384H576c-8.24-98.45-64.54-181.78-146.85-226.55"/></svg>
+        <div class="category-header" onclick="toggleCategory('wrapper-indie', this)">
+            <h3 class="category-title indie">Indie Games & Web</h3>
+            <svg class="toggle-arrow" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><path d="M224 416c-8.188 0-16.38-3.125-22.62-9.375l-192-192c-12.5-12.5-12.5-32.75 0-45.25s32.75-12.5 45.25 0L224 338.8l169.4-169.4c12.5-12.5 32.75-12.5 45.25 0s12.5 32.75 0 45.25l-192 192C240.4 412.9 232.2 416 224 416z"/></svg>
+        </div>
+
+        <div class="grid-wrapper" id="wrapper-indie">
+            <div class="project-grid">
+                
+                <div class="project-card">
+                    <img src="https://ggjv4.s3.us-west-1.amazonaws.com/files/styles/flexslider_full/s3/games/2026/864713/screenshot/Screenshot%202026-02-01%20163255.png?VersionId=3coHu.chQwYHxFf4EM_DLSQ1sb8Enz81&itok=yqQhdfLI" class="project-img" alt="UNMASKED">
+                    <div class="project-info">
+                        <div class="platform-tags">
+                            <svg class="platform-icon windows" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><path d="M0 93.7l183.6-25.3v177.4H0V93.7zm0 324.6l183.6 25.3V268.4H0v149.9zm203.8 28L448 480V268.4H203.8v177.9zm0-380.6v180.1H448V32L203.8 65.7z"/></svg>
+                            <svg class="platform-icon android" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 576 512"><path d="M420.55,301.93a24,24,0,1,1,24-24,24,24,0,0,1-24,24m-265.1,0a24,24,0,1,1,24-24,24,24,0,0,1-24,24m273.7-144.48,47.94-83a10,10,0,1,0-17.27-10l-48.54,84.07a301.25,301.25,0,0,0-246.56,0L116.18,64.45a10,10,0,1,0-17.27,10l47.94,83C64.53,202.22,8.24,285.55,0,384H576c-8.24-98.45-64.54-181.78-146.85-226.55"/></svg>
+                        </div>
+                        <h3>UNMASKED</h3>
+                        <p>Game platformer 3D minimalis tentang persepsi dan memori.</p>
+                        <a href="https://hita-studio.itch.io/unmasked" class="cool-btn secondary" target="_blank" rel="noopener noreferrer" style="padding: 8px 20px; font-size: 0.8rem; display:inline-block; margin-top:10px;">Lihat</a>
                     </div>
-                    <h3>Think & Code 3D</h3>
-                    <p>Game edukasi web untuk melatih logika pemrograman anak-anak.</p>
-                    <a href="https://hitastudio.github.io/testing-think-and-code-3d/" class="cool-btn secondary" target="_blank" rel="noopener noreferrer" style="padding: 8px 20px; font-size: 0.8rem; display:inline-block; margin-top:10px;">Lihat</a>
                 </div>
-            </div>
 
-            <div class="project-card">
-                <img src="https://raw.githubusercontent.com/hitastudio/Think-and-Code/refs/heads/main/index.icon.png" class="project-img" alt="Think & Code">
-                <div class="project-info">
-                    <div class="platform-tags">
-                        <svg class="platform-icon windows" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><path d="M0 93.7l183.6-25.3v177.4H0V93.7zm0 324.6l183.6 25.3V268.4H0v149.9zm203.8 28L448 480V268.4H203.8v177.9zm0-380.6v180.1H448V32L203.8 65.7z"/></svg>
+                <div class="project-card">
+                    <img src="think and code 3d.png" class="project-img" alt="Think & Code 3D">
+                    <div class="project-info">
+                        <div class="platform-tags">
+                            <svg class="platform-icon windows" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><path d="M0 93.7l183.6-25.3v177.4H0V93.7zm0 324.6l183.6 25.3V268.4H0v149.9zm203.8 28L448 480V268.4H203.8v177.9zm0-380.6v180.1H448V32L203.8 65.7z"/></svg>
+                            <svg class="platform-icon android" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 576 512"><path d="M420.55,301.93a24,24,0,1,1,24-24,24,24,0,0,1-24,24m-265.1,0a24,24,0,1,1,24-24,24,24,0,0,1-24,24m273.7-144.48,47.94-83a10,10,0,1,0-17.27-10l-48.54,84.07a301.25,301.25,0,0,0-246.56,0L116.18,64.45a10,10,0,1,0-17.27,10l47.94,83C64.53,202.22,8.24,285.55,0,384H576c-8.24-98.45-64.54-181.78-146.85-226.55"/></svg>
+                        </div>
+                        <h3>Think & Code 3D</h3>
+                        <p>Game edukasi web untuk melatih logika pemrograman anak-anak.</p>
+                        <a href="https://hitastudio.github.io/testing-think-and-code-3d/" class="cool-btn secondary" target="_blank" rel="noopener noreferrer" style="padding: 8px 20px; font-size: 0.8rem; display:inline-block; margin-top:10px;">Lihat</a>
                     </div>
-                    <h3>Think & Code</h3>
-                    <p>Game edukasi berbasis web yang dirancang untuk membantu anak mengenal dasar logika pemrograman.</p>
-                    <a href="https://hitastudio.github.io/Think-and-Code/" class="cool-btn secondary" target="_blank" rel="noopener noreferrer" style="padding: 8px 20px; font-size: 0.8rem; display:inline-block; margin-top:10px;">Mainkan</a>
                 </div>
-            </div>
 
-            <div class="project-card">
-                <img src="https://img.itch.zone/aW1hZ2UvMzg3ODMyNS8yMzE0MDA0Ny5wbmc=/794x1000/WQhPiE.png" class="project-img" alt="Suara Lorong">
-                <div class="project-info">
-                    <div class="platform-tags">
-                        <svg class="platform-icon windows" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><path d="M0 93.7l183.6-25.3v177.4H0V93.7zm0 324.6l183.6 25.3V268.4H0v149.9zm203.8 28L448 480V268.4H203.8v177.9zm0-380.6v180.1H448V32L203.8 65.7z"/></svg>
+                <div class="project-card">
+                    <img src="https://raw.githubusercontent.com/hitastudio/Think-and-Code/refs/heads/main/index.icon.png" class="project-img" alt="Think & Code">
+                    <div class="project-info">
+                        <div class="platform-tags">
+                            <svg class="platform-icon windows" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><path d="M0 93.7l183.6-25.3v177.4H0V93.7zm0 324.6l183.6 25.3V268.4H0v149.9zm203.8 28L448 480V268.4H203.8v177.9zm0-380.6v180.1H448V32L203.8 65.7z"/></svg>
+                        </div>
+                        <h3>Think & Code</h3>
+                        <p>Game edukasi berbasis web yang dirancang untuk membantu anak mengenal dasar logika pemrograman.</p>
+                        <a href="https://hitastudio.github.io/Think-and-Code/" class="cool-btn secondary" target="_blank" rel="noopener noreferrer" style="padding: 8px 20px; font-size: 0.8rem; display:inline-block; margin-top:10px;">Mainkan</a>
                     </div>
-                    <h3>Suara Lorong</h3>
-                    <p>Horor naratif psikologis dengan tema perdamaian, kesedihan, dan paranoia.</p>
-                    <a href="https://gemilang-studio.itch.io/suara-lorong" class="cool-btn secondary" target="_blank" rel="noopener noreferrer" style="padding: 8px 20px; font-size: 0.8rem; display:inline-block; margin-top:10px;">Lihat</a>
                 </div>
-            </div>
 
-            <div class="project-card">
-                <img src="https://img.itch.zone/aW1hZ2UvMzkyMzk1NC8yMzM5NzU5OC5wbmc=/794x1000/Y2MkMg.png" class="project-img" alt="Key Of Hell">
-                <div class="project-info">
-                    <div class="platform-tags">
-                        <svg class="platform-icon windows" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><path d="M0 93.7l183.6-25.3v177.4H0V93.7zm0 324.6l183.6 25.3V268.4H0v149.9zm203.8 28L448 480V268.4H203.8v177.9zm0-380.6v180.1H448V32L203.8 65.7z"/></svg>
+                <div class="project-card">
+                    <img src="https://img.itch.zone/aW1hZ2UvMzg3ODMyNS8yMzE0MDA0Ny5wbmc=/794x1000/WQhPiE.png" class="project-img" alt="Suara Lorong">
+                    <div class="project-info">
+                        <div class="platform-tags">
+                            <svg class="platform-icon windows" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><path d="M0 93.7l183.6-25.3v177.4H0V93.7zm0 324.6l183.6 25.3V268.4H0v149.9zm203.8 28L448 480V268.4H203.8v177.9zm0-380.6v180.1H448V32L203.8 65.7z"/></svg>
+                        </div>
+                        <h3>Suara Lorong</h3>
+                        <p>Horor naratif psikologis dengan tema perdamaian, kesedihan, dan paranoia.</p>
+                        <a href="https://gemilang-studio.itch.io/suara-lorong" class="cool-btn secondary" target="_blank" rel="noopener noreferrer" style="padding: 8px 20px; font-size: 0.8rem; display:inline-block; margin-top:10px;">Lihat</a>
                     </div>
-                    <h3>Key Of Hell</h3>
-                    <p>Menghadapi monster gelombang yang tak mengenal ampun, dan memastikan dunia tidak terjerumus ke dalam kekacauan.</p>
-                    <a href="https://hita-studio.itch.io/key-of-hell" class="cool-btn secondary" target="_blank" rel="noopener noreferrer" style="padding: 8px 20px; font-size: 0.8rem; display:inline-block; margin-top:10px;">Lihat</a>
                 </div>
-            </div>
 
-            <div class="project-card">
-                <img src="https://img.itch.zone/aW1hZ2UvMzkzNTg1Ny8yMzQ2NjIyNS5wbmc=/794x1000/VuQzYV.png" class="project-img" alt="Death Mechanism">
-                <div class="project-info">
-                    <div class="platform-tags">
-                        <svg class="platform-icon windows" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><path d="M0 93.7l183.6-25.3v177.4H0V93.7zm0 324.6l183.6 25.3V268.4H0v149.9zm203.8 28L448 480V268.4H203.8v177.9zm0-380.6v180.1H448V32L203.8 65.7z"/></svg>
+                <div class="project-card">
+                    <img src="https://img.itch.zone/aW1hZ2UvMzkyMzk1NC8yMzM5NzU5OC5wbmc=/794x1000/Y2MkMg.png" class="project-img" alt="Key Of Hell">
+                    <div class="project-info">
+                        <div class="platform-tags">
+                            <svg class="platform-icon windows" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><path d="M0 93.7l183.6-25.3v177.4H0V93.7zm0 324.6l183.6 25.3V268.4H0v149.9zm203.8 28L448 480V268.4H203.8v177.9zm0-380.6v180.1H448V32L203.8 65.7z"/></svg>
+                        </div>
+                        <h3>Key Of Hell</h3>
+                        <p>Menghadapi monster gelombang yang tak mengenal ampun, dan memastikan dunia tidak terjerumus ke dalam kekacauan.</p>
+                        <a href="https://hita-studio.itch.io/key-of-hell" class="cool-btn secondary" target="_blank" rel="noopener noreferrer" style="padding: 8px 20px; font-size: 0.8rem; display:inline-block; margin-top:10px;">Lihat</a>
                     </div>
-                    <h3>Death Mechanism</h3>
-                    <p>Jelajahi teka-teki di mana kematian hanyalah permulaan! Gunakan mayatmu untuk memecahkan teka-teki.</p>
-                    <a href="https://hita-studio.itch.io/death-mechanism" class="cool-btn secondary" target="_blank" rel="noopener noreferrer" style="padding: 8px 20px; font-size: 0.8rem; display:inline-block; margin-top:10px;">Lihat</a>
                 </div>
-            </div>
 
-            <div class="project-card">
-                <img src="https://img.itch.zone/aW1hZ2UvNDA4MzgzOC8yNDM0MjQxMS5wbmc=/794x1000/0%2BAA62.png" class="project-img" alt="Eatherwave Isle">
-                <div class="project-info">
-                    <div class="platform-tags">
-                        <svg class="platform-icon windows" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><path d="M0 93.7l183.6-25.3v177.4H0V93.7zm0 324.6l183.6 25.3V268.4H0v149.9zm203.8 28L448 480V268.4H203.8v177.9zm0-380.6v180.1H448V32L203.8 65.7z"/></svg>
+                <div class="project-card">
+                    <img src="https://img.itch.zone/aW1hZ2UvMzkzNTg1Ny8yMzQ2NjIyNS5wbmc=/794x1000/VuQzYV.png" class="project-img" alt="Death Mechanism">
+                    <div class="project-info">
+                        <div class="platform-tags">
+                            <svg class="platform-icon windows" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><path d="M0 93.7l183.6-25.3v177.4H0V93.7zm0 324.6l183.6 25.3V268.4H0v149.9zm203.8 28L448 480V268.4H203.8v177.9zm0-380.6v180.1H448V32L203.8 65.7z"/></svg>
+                        </div>
+                        <h3>Death Mechanism</h3>
+                        <p>Jelajahi teka-teki di mana kematian hanyalah permulaan! Gunakan mayatmu untuk memecahkan teka-teki.</p>
+                        <a href="https://hita-studio.itch.io/death-mechanism" class="cool-btn secondary" target="_blank" rel="noopener noreferrer" style="padding: 8px 20px; font-size: 0.8rem; display:inline-block; margin-top:10px;">Lihat</a>
                     </div>
-                    <h3>Eatherwave Isle</h3>
-                    <p>Kumpulkan sumber daya, bangun pertahanan, dan bertahan dari kegelapan malam.</p>
-                    <a href="https://hita-studio.itch.io/eather" class="cool-btn secondary" target="_blank" rel="noopener noreferrer" style="padding: 8px 20px; font-size: 0.8rem; display:inline-block; margin-top:10px;">Lihat</a>
                 </div>
-            </div>
 
+                <div class="project-card">
+                    <img src="https://img.itch.zone/aW1hZ2UvNDA4MzgzOC8yNDM0MjQxMS5wbmc=/794x1000/0%2BAA62.png" class="project-img" alt="Eatherwave Isle">
+                    <div class="project-info">
+                        <div class="platform-tags">
+                            <svg class="platform-icon windows" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><path d="M0 93.7l183.6-25.3v177.4H0V93.7zm0 324.6l183.6 25.3V268.4H0v149.9zm203.8 28L448 480V268.4H203.8v177.9zm0-380.6v180.1H448V32L203.8 65.7z"/></svg>
+                        </div>
+                        <h3>Eatherwave Isle</h3>
+                        <p>Kumpulkan sumber daya, bangun pertahanan, dan bertahan dari kegelapan malam.</p>
+                        <a href="https://hita-studio.itch.io/eather" class="cool-btn secondary" target="_blank" rel="noopener noreferrer" style="padding: 8px 20px; font-size: 0.8rem; display:inline-block; margin-top:10px;">Lihat</a>
+                    </div>
+                </div>
+
+            </div>
         </div>
     </section>
 
@@ -349,6 +410,17 @@
 
 
     <script>
+        /* Fitur Toggle Category / Animasi Hide Grid */
+        function toggleCategory(wrapperId, headerElement) {
+            const wrapper = document.getElementById(wrapperId);
+            
+            // Memutar panah
+            headerElement.classList.toggle('collapsed');
+            
+            // Mengatur animasi expand/collapse menggunakan class
+            wrapper.classList.toggle('hidden');
+        }
+
         /* Mobile Menu Toggle */
         const menuToggle = document.getElementById('mobile-menu');
         const navLinks = document.getElementById('nav-links');
